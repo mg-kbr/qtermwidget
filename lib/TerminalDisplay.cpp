@@ -2865,7 +2865,6 @@ void TerminalDisplay::keyPressEvent( QKeyEvent* event )
 {
     _actSel=0; // Key stroke implies a screen update, so TerminalDisplay won't
               // know where the current selection is.
-
     if (_hasBlinkingCursor)
     {
       _blinkCursorTimer->start(QApplication::cursorFlashTime() / 2);
@@ -2874,9 +2873,26 @@ void TerminalDisplay::keyPressEvent( QKeyEvent* event )
       else
         _cursorBlinking = false;
     }
-
+    // ctrl + shift
+    if ((event->modifiers() & Qt::ControlModifier) && (event->modifiers() & Qt::ShiftModifier))
+    {
+      // + c
+      if (event->key() == Qt::Key_C)
+      {
+        // copy
+        copyClipboard();
+        goto skip_key_press_forward;
+      }
+      // + v
+      else if (event->key() == Qt::Key_V)
+      {
+        // paste
+        pasteClipboard();
+        goto skip_key_press_forward;
+      }
+    }
     emit keyPressedSignal(event, false);
-
+    skip_key_press_forward:
     event->accept();
 }
 
